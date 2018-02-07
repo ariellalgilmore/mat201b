@@ -34,6 +34,7 @@ struct Particle {
         Vec3f(0, 1, 0).cross(position).normalize(initialSpeed);
     c = HSV(rnd::uniform(), 0.7, 1);
   }
+  
   void draw(Graphics& g) {
     g.pushMatrix();
     g.translate(position);
