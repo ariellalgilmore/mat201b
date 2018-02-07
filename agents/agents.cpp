@@ -1,3 +1,9 @@
+//ariella gilmore
+//MAT 201B
+//sublime
+//ariellalgilmore@gmail.com
+//2/7/18
+
 #include "allocore/io/al_App.hpp"
 #include <math.h>
 #include <stdio.h>
