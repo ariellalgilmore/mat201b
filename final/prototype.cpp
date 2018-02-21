@@ -39,7 +39,7 @@ public:
 
     // find and open the data file and die unless we have it open
     //
-    ifstream f(fullPathOrDie("other.csv", ".."), ios::in);
+    ifstream f(fullPathOrDie("othercopy.csv", ".."), ios::in);
     if (!f.is_open()) {
       cout << "file not open" << endl;
       exit(1);
