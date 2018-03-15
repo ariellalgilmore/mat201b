@@ -76,6 +76,9 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   cuttlebone::Maker<State> maker;
   State* state = new State;
   virtual void onAnimate(double dt) {
+    while (InterfaceServerClient::oscRecv().recv())
+      ;  // XXX
+
     state->angle += rateSlider.getValue();
     state->pose = nav();
 
