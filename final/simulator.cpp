@@ -1,278 +1,137 @@
-/*
-AlloGLV Example: App GUI
-
-Description:
-This demonstrates how to add a GUI to an al::App to control some properties of
-a sphere.
-
-Author:
-Lance Putnam, Nov. 2013, putnam.lance@gmail.com
-*/
-
-#include <cassert>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <vector>
-#include <math.h>
-#include "allocore/io/al_App.hpp"
-#include "alloGLV/al_ControlGLV.hpp"
-#include "Cuttlebone/Cuttlebone.hpp"
 #include "common.h"
+
 #include "GLV/glv.h"
-using namespace al;
-using namespace std;
+#include "alloGLV/al_ControlGLV.hpp"
+#include "alloutil/al_AlloSphereAudioSpatializer.hpp"
+#include "alloutil/al_Simulator.hpp"
 
-template <typename Out>
-void split(const string& s, char delim, Out result) {
-  stringstream ss(s);
-  string item;
-  while (getline(ss, item, delim)) {
-    *(result++) = item;
-  }
-}
+struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
+  vector<Vec3f> pos;
+  Data data;
 
-vector<string> split(const string& s, char delim) {
-  vector<string> elems;
-  split(s, delim, back_inserter(elems));
-  return elems;
-}
+  GLVBinding gui;
+  glv::Slider2D slider2d;
+  glv::Slider scaleSlider;
+  glv::Slider rateSlider;
+  glv::Table layout;
 
-struct Row {
-  string country;
-  float latitude;
-  float longitude;
-  vector<int> monthData;
-  vector<int> colors;
-  //vector<vector<int>> monthData;
-};
+  SoundSource aSoundSource;
 
-struct Data {
-  vector<Row> row;
+  MyApp()
+      : maker(Simulator::defaultBroadcastIP()),
+        InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
+    data.load(fullPathOrDie("justnumbers2_1.csv"));
 
-  void load(string filePath) {
-    printf("load\n");
-    ifstream file(filePath);
-    string line;
+    addSphere(sphere);
+    sphere.generateNormals();
+    float worldradius = 1;
+    for (int i = 0; i < data.row.size(); i++) {
+      Vec3f position;
+      position.x = -worldradius * cos((data.row[i].latitude) * (3.14 / 180)) *
+                   cos((data.row[i].longitude) * (3.14 / 180));
+      position.y = worldradius * sin((data.row[i].latitude) * (3.14 / 180));
+      position.z = worldradius * cos((data.row[i].latitude) * (3.14 / 180)) *
+                   sin((data.row[i].longitude) * (3.14 / 180));
 
-    if(file.is_open() == false){
-      printf("error\n");
-    } else printf("ok\n");
-
-    while (getline(file, line)) {
-
-      for(auto& s : split(line, '\r')) {
-        vector<string> data = split(s, ',');
-
-        Row r;
-        r.country = data[0];
-        r.latitude = stof(data[1]);
-        r.longitude = stof(data[2]);
-        r.monthData.resize(data.size() - 3);
-        r.colors.resize(data.size() - 3);
-        for (int i = 0; i < r.monthData.size(); ++i){
-          r.monthData[i] = stoi(data[i + 3]);
-          r.colors[i] = stoi(data[i + 3]);
-          //cout << r.monthData[i] << " " << i << endl;
-        }        
-        for(int i = 0; i < data.size();i++) {
-          //printf("%s\t", data[i].c_str());
-        }
-        row.push_back(r);
-        //cout << endl;
+      pos.push_back(position);
+      for (int j = 0; j < data.row[0].monthData.size(); j++) {
+        int outgoing =
+            5 + (data.row[i].monthData[j] - 0) * (100 - 5) / (100 - 0);
+        int outgoingcolor =
+            0 + (data.row[i].colors[j] - 0) * (255 - 0) / (100 - 0);
+        data.row[i].monthData[j] = outgoing;
+        data.row[i].colors[j] = outgoingcolor;
       }
     }
+
+    nav().pos().set(0, 0, 4);
+    initWindow();
+
+    gui.bindTo(window());
+    gui.style().color.set(glv::Color(0.7), 0.5);
+    layout.arrangement(">p");
+
+    scaleSlider.setValue(0);
+    scaleSlider.interval(0, 0.007);
+    layout << scaleSlider;
+    layout << new glv::Label("scale");
+
+    rateSlider.setValue(1);
+    rateSlider.interval(.1, 8);
+    layout << rateSlider;
+    layout << new glv::Label("rate");
+
+    layout.arrange();
+    gui << layout;
+
+    // audio
+    AlloSphereAudioSpatializer::initAudio();
+    AlloSphereAudioSpatializer::initSpatialization();
+    // if gamma
+    // gam::Sync::master().spu(AlloSphereAudioSpatializer::audioIO().fps());
+    scene()->addSource(aSoundSource);
+    scene()->usePerSampleProcessing(false);
   }
-};
 
-// enum Mode {
-//  MANUAL,
-//  SLIDES
-// };
-
-class MyApp : public App{
-public:
   cuttlebone::Maker<State> maker;
   State* state = new State;
+  virtual void onAnimate(double dt) {
+    state->angle += rateSlider.getValue();
+    state->pose = nav();
 
+    static double timer = 0;
+    timer += dt;
+    if (timer > 3) {
+      timer -= 3;
+      state->indexOfDataSet++;
+      if (state->indexOfDataSet >= data.row[0].monthData.size())
+        state->indexOfDataSet = 0;
+    }
+
+    state->course = -scaleSlider.getValue();
+
+    state->pose = nav();
+    maker.set(*state);
+  }
 
   Material material;
   Light light;
-  Mesh mesh;
-  //Mesh sphere;
-  vector<Vec3f> pos;
-  float worldradius = 1;
-  //vector<Spheres> spheres;
-  Data data;
-  int radius = 0;
-  //vector<int> radius;
-  // vector<int> radius2;
-  // vector<int> radius3;
-  vector<vector<int>> size;
-  vector<int> color;
-  double time =0;
-  double scale = .001;
-  int radiusCounter = 0;
-  //vector<vector<Color>> c;
-  float fine = 0, course = 0;
-  double temptime;
-  int inttime =0;
-  int lastime = 0;
-
-
-
-  GLVBinding gui;
-  // glv::Slider slider;
-  // glv::ColorPicker colorPicker;
-  glv::Slider2D slider2d;
-  glv::Slider slider;
-  glv::Slider timeslide;
-  glv::Table layout;
-  float framenum = 0;
-
-  // Mesh sphere;
-  // float scaling;
-  // Vec2f position;
-
-  MyApp() : maker("127.0.0.1"){
-
-
-      data.load("./ariella.gilmore/fp/justnumbers2_1.csv");
-
-      addSphere(mesh);
-      mesh.generateNormals();
-    for (int i = 0; i < data.row.size(); i++) {
-        Vec3f position;
-        position.x  = -worldradius * cos((data.row[i].latitude)*(3.14/180))*cos((data.row[i].longitude)*(3.14/180));
-        position.y  = worldradius * sin((data.row[i].latitude)*(3.14/180));
-        position.z  = worldradius * cos((data.row[i].latitude)*(3.14/180))*sin((data.row[i].longitude)*(3.14/180));
-
-        //c = HSV(255, 0, 1);
-        
-        //color.push_back(data.row[i].monthData[0]);
-        // addSphere(sphere, amount[i]/100);
-        // sphere.translate(position);
-        //mesh.vertex(position);
-        pos.push_back(position);
-        for(int j = 0; j < 96; j++){
-          //cout << i << " "<<  j<< " " << data.row[i].monthData[j] << " ";
-        //outgoing = 0 + (10 - 0) * ((data.row[i].monthData[j] - 0) / (100 - 0));
-        int outgoing = 5 + (data.row[i].monthData[j] - 0) * (100 - 5) / (100 - 0);
-        int outgoingcolor = 0 + (data.row[i].colors[j] - 0) * (255 - 0) / (100 - 0);
-        //cout << outgoing << endl;
-        data.row[i].monthData[j] = outgoing;
-        //cout << outgoing << endl;
-        //data.row[i].monthData[j] = outgoing;
-        //cout << data.row[i].monthData[j]*scale << endl;
-        
-        data.row[i].colors[j] = outgoingcolor;
-
-        //cout << "here" << endl;
-      }
-    }
-
-    nav().pos().set(0,0,4);
-    initWindow();
-
-    // Connect GUI to window
-    gui.bindTo(window());
-
-    // Configure GUI
-    gui.style().color.set(glv::Color(0.7), 0.5);
-
-    layout.arrangement(">p");
-
-    slider.setValue(0);
-    slider.interval(0,0.007);
-    layout << slider;
-    layout << new glv::Label("scale");
-
-    timeslide.setValue(1);
-    timeslide.interval(.1,8);
-    layout << timeslide;
-    layout << new glv::Label("time");
-
-    layout.arrange();
-
-    gui << layout;
-  }
-
-  double tscale;
-  double changetscale = 0;
-  double change =0;
-  double lastchange =0;
-  double Ta = 0, Tb = 0;
-  virtual void onAnimate(double dt){
-    tscale = timeslide.getValue();
-    state->secondslide = tscale;
-    state->radi = radius;
-    if(tscale != changetscale){
-      time =0;
-      lastime =0;
-      lastchange =0;
-      radius =0;
-    }
-    changetscale = tscale;
-    time += dt;
-    state->timer = time;
-    inttime = time*tscale;
-    change = inttime/tscale;
-    
-
-    if(change == 12/tscale){
-      time = 0;
-    }
-    if(radius == 96){
-      cout << "here" << endl;
-      radius =0;
-    }
-
-    if(change != lastime && lastchange != change){
-      //cout << inttime << " " << change << " " << lastime << endl;
-      if(radius < 96){
-        //cout << inttime << " " << lastime << endl; 
-          radius++;
-        }
-        lastchange = change;
-    }
-
-
-    lastime = change;
-
-    course = -slider.getValue();
-
-    state->firstslide = course;
-    state->pose = nav();
-    maker.set(*state);
-
-    }
+  Mesh sphere;
   virtual void onDraw(Graphics& g, const Viewpoint& v) {
-    g.rotate(time*30*tscale,0,1,0);
+    g.rotate(state->angle, 0, 1, 0);
     material();
-    //light();
-    for(int i = 0; i < data.row.size(); i++){
+    light();
+
+    for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
-      //g.color(255);
-      for(int j = 0; j < 96; j++){
-        //g.color(HSV(.6,0,1));
-        g.color(RGB(.2 ,data.row[i].colors[j] / 255.0,data.row[i].colors[j]/ 255.0));
-        //cout << data.row[i].colors[j]/255.0 << endl;;
+      for (int j = 0; j < data.row[0].monthData.size(); j++) {
+        g.color(RGB(.2, data.row[i].colors[j] / 255.0,
+                    data.row[i].colors[j] / 255.0));
       }
-      g.translate(pos[i] + pos[i]*data.row[i].monthData[radius] * course);
-      // if(data.row[i].monthData[radius] == 0){
-      //  data.row[i].monthData[radius] = 5;
-      // }
-      g.scale(data.row[i].monthData[radius]*scale);
-      g.draw(mesh);
+      g.translate(pos[i] + pos[i] *
+                               data.row[i].monthData[state->indexOfDataSet] *
+                               state->course);
+      double scale = .001;
+      g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
+      g.draw(sphere);
       g.popMatrix();
-      
     }
   }
 
-
-
+  virtual void onSound(AudioIOData& io) {
+    aSoundSource.pose(nav());
+    while (io()) {
+      aSoundSource.writeSample(0);
+    }
+    listener()->pose(nav());
+    scene()->render(io);
+  }
 };
 
-int main(){
-  MyApp app; app.maker.start(); app.start();  
+int main() {
+  MyApp app;
+  app.AlloSphereAudioSpatializer::audioIO().start();
+  app.InterfaceServerClient::connect();
+  app.maker.start();
+  app.start();
 }
