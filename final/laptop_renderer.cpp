@@ -1,9 +1,6 @@
 #include "common.h"
 
-#include "alloutil/al_OmniStereoGraphicsRenderer.hpp"
-
-// struct MyApp :  App {
-struct MyApp : OmniStereoGraphicsRenderer {
+struct MyApp : public App {
   vector<Vec3f> pos;
   Data data;
 
@@ -41,18 +38,16 @@ struct MyApp : OmniStereoGraphicsRenderer {
   State* state = new State;
   virtual void onAnimate(double dt) {
     taker.get(*state);
-    pose = state->pose;
+    nav().set(state->pose);
   }
 
   Material material;
   Light light;
   Mesh sphere;
-  // virtual void onDraw(Graphics& g, const Viewpoint& v) {
-  virtual void onDraw(Graphics& g) {
+  virtual void onDraw(Graphics& g, const Viewpoint& v) {
     g.rotate(state->angle, 0, 1, 0);
-    // material();
+    material();
     light();
-    shader().uniform("lighting", 1.0);
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
