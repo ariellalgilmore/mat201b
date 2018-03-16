@@ -24,7 +24,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
-    memset(state, 0, sizeof(state));
+    memset(state, 0, sizeof(State));
 
     Image background;
 

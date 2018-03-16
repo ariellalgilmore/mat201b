@@ -8,7 +8,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Data data;
 
   MyApp() {
-    memset(state, 0, sizeof(state));
+    memset(state, 0, sizeof(State));
 
     Image background;
 
@@ -58,8 +58,11 @@ struct MyApp : OmniStereoGraphicsRenderer {
   cuttlebone::Taker<State> taker;
   State* state = new State;
   virtual void onAnimate(double dt) {
-    taker.get(*state);
-    pose = state->pose;
+    if (taker.get(*state) > 0) {
+      pose = state->pose;
+    } else {
+      pose = nav();
+    }
   }
 
   Material material;
@@ -67,14 +70,17 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Mesh sphere;
   // virtual void onDraw(Graphics& g, const Viewpoint& v) {
   virtual void onDraw(Graphics& g) {
+    shader().uniform("lighting", 0.0);
+    shader().uniform("texture", 1.0);
     backTexture.bind();
     g.draw(backMesh);
     backTexture.unbind();
 
     g.rotate(state->angle, 0, 1, 0);
-    // material();
+    material();
     light();
-    shader().uniform("lighting", 1.0);
+    shader().uniform("lighting", 0.2);
+    shader().uniform("texture", 0.0);
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
