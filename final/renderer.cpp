@@ -8,7 +8,6 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Data data;
 
   MyApp() {
-
     memset(state, 0, sizeof(state));
 
     Image background;
@@ -23,14 +22,14 @@ struct MyApp : OmniStereoGraphicsRenderer {
     backMesh.generateNormals();
 
     lens().far(1000);
-    
+
     data.load(fullPathOrDie("justnumbers2_1.csv"));
 
     addSphere(sphere);
     sphere.generateNormals();
 
     float worldradius = 1;
-    cout<< data.row[0].monthData.size() << endl;
+    cout << data.row[0].monthData.size() << endl;
     for (int i = 0; i < data.row.size(); i++) {
       // cout << i << endl;
       Vec3f position;
