@@ -58,11 +58,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
   cuttlebone::Taker<State> taker;
   State* state = new State;
   virtual void onAnimate(double dt) {
-    if (taker.get(*state) > 0) {
-      pose = state->pose;
-    } else {
-      pose = nav();
-    }
+    if (taker.get(*state) > 0) pose = state->pose;
   }
 
   Material material;
