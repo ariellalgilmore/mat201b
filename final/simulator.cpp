@@ -13,6 +13,10 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   glv::Slider2D slider2d;
   glv::Slider scaleSlider;
   glv::Slider rateSlider;
+  glv::Slider month;
+  glv::Slider year;
+  glv::Label monthlabel;
+  glv::Label yearlabel;
   glv::Table layout;
 
   SoundSource aSoundSource;
@@ -20,7 +24,22 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
-    data.load(fullPathOrDie("justnumbers2_1.csv"));
+
+    Image background;
+
+    if (!background.load(fullPathOrDie("possiblebg.png"))) {
+      fprintf(stderr, "FAIL\n");
+      exit(1);
+    }
+    backTexture.allocate(background.array());
+
+    addSphereWithTexcoords(backMesh, 1.3);
+    backMesh.generateNormals();
+
+    lens().far(1000);
+
+
+    data.load(fullPathOrDie("finaltennisdata.csv"));
 
     addSphere(sphere);
     sphere.generateNormals();
@@ -60,6 +79,16 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     rateSlider.interval(.1, 8);
     layout << rateSlider;
     layout << new glv::Label("rate");
+
+    month.setValue(0);
+    month.interval(0,11);
+    layout << month;
+    layout << monthlabel.setValue(months[0]);
+
+    year.setValue(0);
+    year.interval(0,9);
+    layout << year;
+    layout << yearlabel.setValue(years[0]);
 
     layout.arrange();
     gui << layout;
@@ -101,6 +130,10 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   Light light;
   Mesh sphere;
   virtual void onDraw(Graphics& g, const Viewpoint& v) {
+    backTexture.bind();
+    g.draw(backMesh);
+    backTexture.unbind();
+
     g.rotate(state->angle, 0, 1, 0);
     material();
     light();
@@ -108,8 +141,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(RGB(.2, data.row[i].colors[j] / 255.0,
-                    data.row[i].colors[j] / 255.0));
+        g.color(HSV(data.row[i].colors[j] / 255.0,.4,.5));
       }
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *

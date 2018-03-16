@@ -8,13 +8,29 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Data data;
 
   MyApp() {
+
+    Image background;
+
+    if (!background.load(fullPathOrDie("possiblebg.png"))) {
+      fprintf(stderr, "FAIL\n");
+      exit(1);
+    }
+    backTexture.allocate(background.array());
+
+    addSphereWithTexcoords(backMesh, 1.3);
+    backMesh.generateNormals();
+
+    lens().far(1000);
+    
     data.load(fullPathOrDie("justnumbers2_1.csv"));
 
     addSphere(sphere);
     sphere.generateNormals();
 
     float worldradius = 1;
+    cout<< data.row[0].monthData.size() << endl;
     for (int i = 0; i < data.row.size(); i++) {
+      // cout << i << endl;
       Vec3f position;
       position.x = -worldradius * cos((data.row[i].latitude) * (3.14 / 180)) *
                    cos((data.row[i].longitude) * (3.14 / 180));
@@ -23,6 +39,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
                    sin((data.row[i].longitude) * (3.14 / 180));
 
       pos.push_back(position);
+
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
         int outgoing =
             5 + (data.row[i].monthData[j] - 0) * (100 - 5) / (100 - 0);
@@ -49,6 +66,10 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Mesh sphere;
   // virtual void onDraw(Graphics& g, const Viewpoint& v) {
   virtual void onDraw(Graphics& g) {
+    backTexture.bind();
+    g.draw(backMesh);
+    backTexture.unbind();
+
     g.rotate(state->angle, 0, 1, 0);
     // material();
     light();
