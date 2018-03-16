@@ -12,8 +12,8 @@
 
 #include <cassert>
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include "allocore/io/al_App.hpp"
 using namespace al;
 using namespace std;
@@ -27,7 +27,7 @@ string fullPathOrDie(string fileName, string whereToLook = ".") {
 }
 
 class AlloApp : public App {
-public: 
+ public:
   Mesh mesh;
   vector<Vec3f> pos;
   float worldradius = 1;
@@ -63,7 +63,7 @@ public:
 
         if (stream.peek() == ',') stream.ignore();
       }
-       //cout << "here2" << endl;
+      // cout << "here2" << endl;
     }
 
     // close the file - we're done
@@ -83,38 +83,34 @@ public:
     //
     for (int row = 0; row < 50; row++) {
       for (int column = 0; column < data[row].size(); column++) {
-        //cout << data[row][0] << " ";
+        // cout << data[row][0] << " ";
         Vec3f position;
-        position.x  = -worldradius * cos((data[row][0])*(3.14/180))*cos((data[row][1])*(3.14/180));
-        position.y  = worldradius * sin((data[row][0])*(3.14/180));
-        position.z  = worldradius * cos((data[row][0])*(3.14/180))*sin((data[row][1])*(3.14/180));
-
+        position.x = -worldradius * cos((data[row][0]) * (3.14 / 180)) *
+                     cos((data[row][1]) * (3.14 / 180));
+        position.y = worldradius * sin((data[row][0]) * (3.14 / 180));
+        position.z = worldradius * cos((data[row][0]) * (3.14 / 180)) *
+                     sin((data[row][1]) * (3.14 / 180));
 
         mesh.vertex(position);
         pos.push_back(position);
-        mesh.color(abs(data[row][2])*10, 100, 100 );
-        //cout << position << endl;
+        mesh.color(abs(data[row][2]) * 10, 100, 100);
+        // cout << position << endl;
       }
-      //cout << endl;
+      // cout << endl;
     }
 
-
-
-
-    //cout << "at the end" << endl;
+    // cout << "at the end" << endl;
   }
-    virtual void onAnimate(double dt){
-      for(int i = 0; i < mesh.vertices().size(); i++){
-        mesh.vertices()[i];
-      }
+  virtual void onAnimate(double dt) {
+    for (int i = 0; i < mesh.vertices().size(); i++) {
+      mesh.vertices()[i];
     }
-  virtual void onDraw(Graphics& g) {
-    g.draw(mesh);
   }
+  virtual void onDraw(Graphics& g) { g.draw(mesh); }
 };
 
-
-int main() { 
+int main() {
   AlloApp app;
   app.initWindow();
-  app.start(); }
+  app.start();
+}
