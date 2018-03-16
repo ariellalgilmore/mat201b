@@ -9,6 +9,8 @@ struct MyApp : OmniStereoGraphicsRenderer {
 
   MyApp() {
 
+    memset(state, 0, sizeof(state));
+
     Image background;
 
     if (!background.load(fullPathOrDie("possiblebg.png"))) {

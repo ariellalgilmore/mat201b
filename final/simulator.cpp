@@ -25,6 +25,8 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
 
+    memset(state, 0, sizeof(state));
+
     Image background;
 
     if (!background.load(fullPathOrDie("possiblebg.png"))) {
