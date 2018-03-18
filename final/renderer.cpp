@@ -108,6 +108,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
       g.draw(sphere);
       if (state->turnOnLabels == 1) {
         g.pushMatrix();
+        shader().uniform("lighting", 0.0);
         g.translate(.9, 0, .9);
         Vec3d forward = Vec3d(Vec3f(0,0,0) - src).normalize();
         Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
@@ -115,6 +116,8 @@ struct MyApp : OmniStereoGraphicsRenderer {
         texture[i].quad(g);
         g.popMatrix();
       }
+      shader().uniform("lighting", 0.2);
+      shader().uniform("texture", 0.0);
       g.popMatrix();
     }
   }
