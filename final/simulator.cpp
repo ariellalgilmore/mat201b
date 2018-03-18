@@ -121,6 +121,8 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
 
   cuttlebone::Maker<State> maker;
   State* state = new State;
+  int monthCounter =0;
+  int yearCounter =0;
   virtual void onAnimate(double dt) {
     while (InterfaceServerClient::oscRecv().recv())
       ;  // XXX
@@ -132,6 +134,15 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     timer += dt;
     if (timer > 3) {
       timer -= 3;
+      month.setValue(monthCounter);
+      monthlabel.setValue(months[monthCounter]);
+      year.setValue(yearCounter);
+      yearlabel.setValue(years[yearCounter]);
+      monthCounter++;
+      if(monthCounter == 12){
+        yearCounter++;
+        monthCounter =0;
+      }
       state->indexOfDataSet++;
       if (state->indexOfDataSet >= data.row[0].monthData.size())
         state->indexOfDataSet = 0;
