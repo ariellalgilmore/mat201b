@@ -1,105 +1,14 @@
 #include "common.h"
 
 #include "alloutil/al_OmniStereoGraphicsRenderer.hpp"
-const char* fileList[] = {"Australia.png",
-"Cyprus.png",
-"Serbia.png",
-"New Zealand.png",
-"Bosnia & Herzegovina.png",
-"Argentina.png",
-"Switzerland.png",
-"Singapore.png",
-"Hong Kong.png",
-"Chile.png",
-"Pakistan.png",
-"Dominican Republic.png",
-"United Arab Emirates.png",
-"France.png",
-"Malaysia.png",
-"Croatia.png",
-"Israel.png",
-"South Africa.png",
-"Belgium.png",
-"Slovakia.png",
-"Slovenia.png",
-"Japan.png",
-"Netherlands.png",
-"Philippines.png",
-"Colombia.png",
-"Czechia.png",
-"United Kingdom.png",
-"United States.png",
-"Bulgaria.png",
-"Romania.png",
-"Canada.png",
-"India.png",
-"Ireland.png",
-"Spain.png",
-"Thailand.png",
-"Austria.png",
-"Peru.png",
-"Italy.png",
-"Sweden.png",
-"Greece.png",
-"Mexico.png",
-"Poland.png",
-"Hungary.png",
-"Taiwan.png",
-"Germany.png",
-"Finland.png",
-"Denmark.png",
-"Portugal.png",
-"Vietnam.png",
-"Venezuela.png",
-"Indonesia.png",
-"Morocco.png",
-"Egypt.png",
-"Russia.png",
-"Norway.png",
-"Ukraine.png",
-"Brazil.png",
-"Lithuania.png",
-"Turkey.png",
-"China.png",
-"Saudi Arabia.png",
-"Qatar.png",
-"Uruguay.png",
-"Costa Rica.png",
-"Puerto Rico.png",
-"South Korea.png",
-"Ecuador.png",
-"Iran.png",
-"Latvia.png",
-"Luxembourg.png",
-"Tunisia.png",
-"Estonia.png",
-"Algeria.png",
-"Kuwait.png",
-"Kazakhstan.png",
-"Montenegro.png",
-"Macedonia.png",
-"Belarus.png",
-"Guatemala.png",
-"Bolivia.png",
-"Iraq.png",
-"Nigeria.png",
-"Honduras.png",
-"Kenya.png",
-"St. Helena.png",
-"Paraguay.png"
-};
-
-#define N (sizeof(fileList) / sizeof(fileList[0]))
-
 // struct MyApp :  App {
 struct MyApp : OmniStereoGraphicsRenderer {
   vector<Vec3f> pos;
   Data data;
-  Texture texture[N];
+  Texture texture[FILE_LIST_N];
 
   MyApp() {
-
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < FILE_LIST_N; i++) {
       Image image;
       if (!image.load(fullPathOrDie(fileList[i], ".."))) {
         cerr << "failed to load " << fileList[i] << endl;
@@ -108,10 +17,10 @@ struct MyApp : OmniStereoGraphicsRenderer {
       texture[i].allocate(image.array());
     }
 
-//     memset(state, 0, sizeof(state));
-// =======
+    //     memset(state, 0, sizeof(state));
+    // =======
     memset(state, 0, sizeof(State));
-// >>>>>>> b28d40ce01a258c918356599dd6d36cafc419e6a
+    // >>>>>>> b28d40ce01a258c918356599dd6d36cafc419e6a
 
     Image background;
 
@@ -191,12 +100,12 @@ struct MyApp : OmniStereoGraphicsRenderer {
       double scale = .001;
       g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
       g.pushMatrix();
-      g.translate(.9,0, .9);
+      g.translate(.9, 0, .9);
       g.popMatrix();
       g.draw(sphere);
-      if(state->turnOnLabels == 1){
+      if (state->turnOnLabels == 1) {
         g.pushMatrix();
-        g.translate(.9,0, .9);
+        g.translate(.9, 0, .9);
         texture[i].quad(g);
         g.popMatrix();
       }
