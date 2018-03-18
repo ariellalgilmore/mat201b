@@ -98,6 +98,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Texture texture[N];
 
   MyApp() {
+<<<<<<< HEAD
 
     for (int i = 0; i < N; i++) {
       Image image;
@@ -109,6 +110,9 @@ struct MyApp : OmniStereoGraphicsRenderer {
     }
 
     memset(state, 0, sizeof(state));
+=======
+    memset(state, 0, sizeof(State));
+>>>>>>> b28d40ce01a258c918356599dd6d36cafc419e6a
 
     Image background;
 
@@ -122,14 +126,14 @@ struct MyApp : OmniStereoGraphicsRenderer {
     backMesh.generateNormals();
 
     lens().far(1000);
-    
+
     data.load(fullPathOrDie("justnumbers2_1.csv"));
 
     addSphere(sphere);
     sphere.generateNormals();
 
     float worldradius = 1;
-    cout<< data.row[0].monthData.size() << endl;
+    cout << data.row[0].monthData.size() << endl;
     for (int i = 0; i < data.row.size(); i++) {
       // cout << i << endl;
       Vec3f position;
@@ -158,8 +162,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
   cuttlebone::Taker<State> taker;
   State* state = new State;
   virtual void onAnimate(double dt) {
-    taker.get(*state);
-    pose = state->pose;
+    if (taker.get(*state) > 0) pose = state->pose;
   }
 
   Material material;
@@ -167,14 +170,17 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Mesh sphere;
   // virtual void onDraw(Graphics& g, const Viewpoint& v) {
   virtual void onDraw(Graphics& g) {
+    shader().uniform("lighting", 0.0);
+    shader().uniform("texture", 1.0);
     backTexture.bind();
     g.draw(backMesh);
     backTexture.unbind();
 
     g.rotate(state->angle, 0, 1, 0);
-    // material();
+    material();
     light();
-    shader().uniform("lighting", 1.0);
+    shader().uniform("lighting", 0.2);
+    shader().uniform("texture", 0.0);
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {

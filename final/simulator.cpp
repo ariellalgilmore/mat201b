@@ -117,8 +117,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
-
-    memset(state, 0, sizeof(state));
+    memset(state, 0, sizeof(State));
 
     for (int i = 0; i < N; i++) {
       Image image;
@@ -141,7 +140,6 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     backMesh.generateNormals();
 
     lens().far(1000);
-
 
     data.load(fullPathOrDie("finaltennisdata.csv"));
 
@@ -187,12 +185,12 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     layout << new glv::Label("rate");
 
     month.setValue(0);
-    month.interval(0,11);
+    month.interval(0, 11);
     layout << month;
     layout << monthlabel.setValue(months[0]);
 
     year.setValue(0);
-    year.interval(0,9);
+    year.interval(0, 9);
     layout << year;
     layout << yearlabel.setValue(years[0]);
 
@@ -249,7 +247,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(HSV(data.row[i].colors[j] / 255.0,.4,.5));
+        g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
       }
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *

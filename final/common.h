@@ -79,9 +79,11 @@ struct Data {
 Mesh backMesh;
 Texture backTexture;
 
-string months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-string years[] = {"2008","2009","2010","2011","2012","2013","2014","2015","2016","2017"};
-
+string months[] = {"January",   "February", "March",    "April",
+                   "May",       "June",     "July",     "August",
+                   "September", "October",  "November", "December"};
+string years[] = {"2008", "2009", "2010", "2011", "2012",
+                  "2013", "2014", "2015", "2016", "2017"};
 
 struct State {
   Pose pose;
@@ -92,4 +94,3 @@ struct State {
 };
 
 #endif
-
