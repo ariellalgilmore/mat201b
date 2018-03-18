@@ -98,7 +98,6 @@ struct MyApp : OmniStereoGraphicsRenderer {
   Texture texture[N];
 
   MyApp() {
-<<<<<<< HEAD
 
     for (int i = 0; i < N; i++) {
       Image image;
@@ -109,10 +108,10 @@ struct MyApp : OmniStereoGraphicsRenderer {
       texture[i].allocate(image.array());
     }
 
-    memset(state, 0, sizeof(state));
-=======
+//     memset(state, 0, sizeof(state));
+// =======
     memset(state, 0, sizeof(State));
->>>>>>> b28d40ce01a258c918356599dd6d36cafc419e6a
+// >>>>>>> b28d40ce01a258c918356599dd6d36cafc419e6a
 
     Image background;
 
@@ -127,7 +126,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
 
     lens().far(1000);
 
-    data.load(fullPathOrDie("justnumbers2_1.csv"));
+    data.load(fullPathOrDie("finaltennisdata.csv"));
 
     addSphere(sphere);
     sphere.generateNormals();
@@ -184,8 +183,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(RGB(.2, data.row[i].colors[j] / 255.0,
-                    data.row[i].colors[j] / 255.0));
+        g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
       }
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *
