@@ -97,6 +97,9 @@ struct MyApp : OmniStereoGraphicsRenderer {
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *
                                state->course);
+      Vec3f src = pos[i] + pos[i] *
+                               data.row[i].monthData[state->indexOfDataSet] *
+                               state->course;
       double scale = .001;
       g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
       g.pushMatrix();
@@ -106,6 +109,9 @@ struct MyApp : OmniStereoGraphicsRenderer {
       if (state->turnOnLabels == 1) {
         g.pushMatrix();
         g.translate(.9, 0, .9);
+        Vec3d forward = Vec3d(Vec3f(0,0,0) - src).normalize();
+        Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
+        g.rotate(rot);
         texture[i].quad(g);
         g.popMatrix();
       }
