@@ -5,95 +5,6 @@
 #include "alloutil/al_AlloSphereAudioSpatializer.hpp"
 #include "alloutil/al_Simulator.hpp"
 
-const char* fileList[] = {"Australia.png",
-                          "Cyprus.png",
-                          "Serbia.png",
-                          "New Zealand.png",
-                          "Bosnia & Herzegovina.png",
-                          "Argentina.png",
-                          "Switzerland.png",
-                          "Singapore.png",
-                          "Hong Kong.png",
-                          "Chile.png",
-                          "Pakistan.png",
-                          "Dominican Republic.png",
-                          "United Arab Emirates.png",
-                          "France.png",
-                          "Malaysia.png",
-                          "Croatia.png",
-                          "Israel.png",
-                          "South Africa.png",
-                          "Belgium.png",
-                          "Slovakia.png",
-                          "Slovenia.png",
-                          "Japan.png",
-                          "Netherlands.png",
-                          "Philippines.png",
-                          "Colombia.png",
-                          "Czechia.png",
-                          "United Kingdom.png",
-                          "United States.png",
-                          "Bulgaria.png",
-                          "Romania.png",
-                          "Canada.png",
-                          "India.png",
-                          "Ireland.png",
-                          "Spain.png",
-                          "Thailand.png",
-                          "Austria.png",
-                          "Peru.png",
-                          "Italy.png",
-                          "Sweden.png",
-                          "Greece.png",
-                          "Mexico.png",
-                          "Poland.png",
-                          "Hungary.png",
-                          "Taiwan.png",
-                          "Germany.png",
-                          "Finland.png",
-                          "Denmark.png",
-                          "Portugal.png",
-                          "Vietnam.png",
-                          "Venezuela.png",
-                          "Indonesia.png",
-                          "Morocco.png",
-                          "Egypt.png",
-                          "Russia.png",
-                          "Norway.png",
-                          "Ukraine.png",
-                          "Brazil.png",
-                          "Lithuania.png",
-                          "Turkey.png",
-                          "China.png",
-                          "Saudi Arabia.png",
-                          "Qatar.png",
-                          "Uruguay.png",
-                          "Costa Rica.png",
-                          "Puerto Rico.png",
-                          "South Korea.png",
-                          "Ecuador.png",
-                          "Iran.png",
-                          "Latvia.png",
-                          "Luxembourg.png",
-                          "Tunisia.png",
-                          "Estonia.png",
-                          "Algeria.png",
-                          "Kuwait.png",
-                          "Kazakhstan.png",
-                          "Montenegro.png",
-                          "Macedonia.png",
-                          "Belarus.png",
-                          "Guatemala.png",
-                          "Bolivia.png",
-                          "Iraq.png",
-                          "Nigeria.png",
-                          "Honduras.png",
-                          "Kenya.png",
-                          "St. Helena.png",
-                          "Paraguay.png"};
-
-#define N (sizeof(fileList) / sizeof(fileList[0]))
-
 struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   vector<Vec3f> pos;
   Data data;
@@ -111,16 +22,18 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
 
   SoundSource aSoundSource;
 
-  Texture texture[N];
+  Texture texture[FILE_LIST_N];
 
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
     memset(state, 0, sizeof(State));
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < FILE_LIST_N; i++) {
       Image image;
-      if (!image.load(fullPathOrDie(fileList[i], ".."))) {
+      string s = fullPathOrDie(fileList[i]);
+      cout << s << endl;
+      if (!image.load(s)) {
         cerr << "failed to load " << fileList[i] << endl;
         exit(1);
       }
