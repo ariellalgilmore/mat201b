@@ -5,6 +5,96 @@
 #include "alloutil/al_AlloSphereAudioSpatializer.hpp"
 #include "alloutil/al_Simulator.hpp"
 
+const char* fileList[] = {"Australia.png",
+"Cyprus.png",
+"Serbia.png",
+"New Zealand.png",
+"Bosnia & Herzegovina.png",
+"Argentina.png",
+"Switzerland.png",
+"Singapore.png",
+"Hong Kong.png",
+"Chile.png",
+"Pakistan.png",
+"Dominican Republic.png",
+"United Arab Emirates.png",
+"France.png",
+"Malaysia.png",
+"Croatia.png",
+"Israel.png",
+"South Africa.png",
+"Belgium.png",
+"Slovakia.png",
+"Slovenia.png",
+"Japan.png",
+"Netherlands.png",
+"Philippines.png",
+"Colombia.png",
+"Czechia.png",
+"United Kingdom.png",
+"United States.png",
+"Bulgaria.png",
+"Romania.png",
+"Canada.png",
+"India.png",
+"Ireland.png",
+"Spain.png",
+"Thailand.png",
+"Austria.png",
+"Peru.png",
+"Italy.png",
+"Sweden.png",
+"Greece.png",
+"Mexico.png",
+"Poland.png",
+"Hungary.png",
+"Taiwan.png",
+"Germany.png",
+"Finland.png",
+"Denmark.png",
+"Portugal.png",
+"Vietnam.png",
+"Venezuela.png",
+"Indonesia.png",
+"Morocco.png",
+"Egypt.png",
+"Russia.png",
+"Norway.png",
+"Ukraine.png",
+"Brazil.png",
+"Lithuania.png",
+"Turkey.png",
+"China.png",
+"Saudi Arabia.png",
+"Qatar.png",
+"Uruguay.png",
+"Costa Rica.png",
+"Puerto Rico.png",
+"South Korea.png",
+"Ecuador.png",
+"Iran.png",
+"Latvia.png",
+"Luxembourg.png",
+"Tunisia.png",
+"Estonia.png",
+"Algeria.png",
+"Kuwait.png",
+"Kazakhstan.png",
+"Montenegro.png",
+"Macedonia.png",
+"Belarus.png",
+"Guatemala.png",
+"Bolivia.png",
+"Iraq.png",
+"Nigeria.png",
+"Honduras.png",
+"Kenya.png",
+"St. Helena.png",
+"Paraguay.png"
+};
+
+#define N (sizeof(fileList) / sizeof(fileList[0]))
+
 struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   vector<Vec3f> pos;
   Data data;
@@ -18,14 +108,26 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   glv::Label monthlabel;
   glv::Label yearlabel;
   glv::Table layout;
+  glv::Button labels;
 
   SoundSource aSoundSource;
+
+  Texture texture[N];
 
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
         InterfaceServerClient(Simulator::defaultInterfaceServerIP()) {
 
     memset(state, 0, sizeof(state));
+
+    for (int i = 0; i < N; i++) {
+      Image image;
+      if (!image.load(fullPathOrDie(fileList[i], ".."))) {
+        cerr << "failed to load " << fileList[i] << endl;
+        exit(1);
+    }
+      texture[i].allocate(image.array());
+    }
 
     Image background;
 
@@ -66,6 +168,8 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     }
 
     nav().pos().set(0, 0, 4);
+    //nav().quat(Quatd(0.96, 0.00, 0.29, 0.00));
+    nav().quat(Quatd(0, 0.00, 0, 0.00));
     initWindow();
 
     gui.bindTo(window());
@@ -92,6 +196,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     layout << year;
     layout << yearlabel.setValue(years[0]);
 
+    layout << labels;
     layout.arrange();
     gui << layout;
 
@@ -123,7 +228,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     }
 
     state->course = -scaleSlider.getValue();
-
+    state->turnOnLabels = labels.getValue();
     state->pose = nav();
     maker.set(*state);
   }
@@ -132,6 +237,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   Light light;
   Mesh sphere;
   virtual void onDraw(Graphics& g, const Viewpoint& v) {
+    //cout << labels.getValue() << endl;
     backTexture.bind();
     g.draw(backMesh);
     backTexture.unbind();
@@ -151,6 +257,12 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
       double scale = .001;
       g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
       g.draw(sphere);
+      if(labels.getValue() == 1){
+        g.pushMatrix();
+        g.translate(.9,0, .9);
+        texture[i].quad(g);
+        g.popMatrix();
+      }
       g.popMatrix();
     }
   }

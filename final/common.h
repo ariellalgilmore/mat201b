@@ -88,6 +88,7 @@ struct State {
   double angle;
   double course;
   int indexOfDataSet;
+  int turnOnLabels;
 };
 
 #endif
