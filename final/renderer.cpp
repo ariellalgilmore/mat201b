@@ -110,7 +110,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
         g.pushMatrix();
         shader().uniform("lighting", 0.0);
         g.translate(.9, 0, .9);
-        Vec3d forward = Vec3d(Vec3f(0,0,0) - src).normalize();
+        Vec3d forward = Vec3d(Vec3f(0, 0, 0) - src).normalize();
         Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
         g.rotate(rot);
         texture[i].quad(g);

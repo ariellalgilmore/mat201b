@@ -121,8 +121,8 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
 
   cuttlebone::Maker<State> maker;
   State* state = new State;
-  int monthCounter =0;
-  int yearCounter =0;
+  int monthCounter = 0;
+  int yearCounter = 0;
   virtual void onAnimate(double dt) {
     while (InterfaceServerClient::oscRecv().recv())
       ;  // XXX
@@ -139,9 +139,9 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
       year.setValue(yearCounter);
       yearlabel.setValue(years[yearCounter]);
       monthCounter++;
-      if(monthCounter == 12){
+      if (monthCounter == 12) {
         yearCounter++;
-        monthCounter =0;
+        monthCounter = 0;
       }
       state->indexOfDataSet++;
       if (state->indexOfDataSet >= data.row[0].monthData.size())
@@ -184,7 +184,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
       if (labels.getValue() == 1) {
         g.pushMatrix();
         g.translate(.9, 0, .9);
-        Vec3d forward = Vec3d(Vec3f(0,0,0) - src).normalize();
+        Vec3d forward = Vec3d(Vec3f(0, 0, 0) - src).normalize();
         Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
         g.rotate(rot);
         texture[i].quad(g);
