@@ -24,7 +24,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
 
     Image background;
 
-    omni().clearColor() = Color(0.2);
+    omni().clearColor() = Color(1);
 
     if (!background.load(fullPathOrDie("possiblebg.png"))) {
       fprintf(stderr, "FAIL\n");
@@ -137,9 +137,9 @@ struct MyApp : OmniStereoGraphicsRenderer {
         g.pushMatrix();
         // g.translate(.9, 0, .9);
         g.translate(src);
-        Vec3d forward = Vec3d(nav().pos() - src).normalize();
+        Vec3d forward = Vec3d(pose.pos() - src).normalize();
         // Vec3d forward = Vec3d(Vec3f(0, 0, 0) - src).normalize();
-        Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
+        Quatd rot = Quatd::getBillboardRotation(forward, pose.uu());
         g.rotate(rot);
         g.scale(0.07);
         texture[i].quad(g);
