@@ -82,7 +82,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     nav().quat(Quatd(0, 0.00, 0, 0.00));
     initWindow();
 
-    App::background(Color(0.1, 1.0));
+    App::background(Color(0.2, 1.0));
 
     gui.bindTo(window());
     gui.style().color.set(glv::Color(0.7), 0.5);
@@ -171,7 +171,6 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     g.depthMask(true);
     g.depthTesting(true);
     g.blending(false);
-    //    g.blendModeAdd();
 
     material();
     light();
