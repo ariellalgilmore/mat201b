@@ -19,6 +19,9 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   glv::Label yearlabel;
   glv::Table layout;
   glv::Button labels;
+  glv::Label labelslabel;
+  glv::Button rotation;
+  glv::Label rotationLabel;
 
   SoundSource aSoundSource;
 
@@ -93,8 +96,8 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     layout << scaleSlider;
     layout << new glv::Label("scale");
 
-    rateSlider.setValue(1);
-    rateSlider.interval(.1, 8);
+    rateSlider.setValue(.01);
+    rateSlider.interval(.01, .03);
     layout << rateSlider;
     layout << new glv::Label("rate");
 
@@ -109,6 +112,11 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     layout << yearlabel.setValue(years[0]);
 
     layout << labels;
+    layout << labelslabel.setValue("Labels");
+
+    layout << rotation;
+    layout << rotationLabel.setValue("rotate");
+
     layout.arrange();
     gui << layout;
 
@@ -129,7 +137,16 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     while (InterfaceServerClient::oscRecv().recv())
       ;  // XXX
 
-    state->angle += rateSlider.getValue();
+    state->rotation = rotation.getValue();
+    if(rotation.getValue() == 1){
+      nav().pos(0,0,0);
+      nav().spinU(rateSlider.getValue());
+      state->angle = rateSlider.getValue();
+    }
+    else{
+      nav().spinU(0);
+    }
+    //state->angle += rateSlider.getValue();
     state->pose = nav();
 
     static double timer = 0;

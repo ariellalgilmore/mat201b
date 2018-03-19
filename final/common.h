@@ -91,6 +91,7 @@ struct State {
   double course;
   int indexOfDataSet;
   int turnOnLabels;
+  int rotation;
 };
 
 const char* fileList[] = {"Australia.png",

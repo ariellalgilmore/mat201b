@@ -73,6 +73,14 @@ struct MyApp : OmniStereoGraphicsRenderer {
   State* state = new State;
   virtual void onAnimate(double dt) {
     if (taker.get(*state) > 0) pose = state->pose;
+    if(state->rotation == 1){
+      nav().pos(0,0,0);
+      nav().spinU(state->angle);
+      //state->angle = rateSlider.getValue();
+    }
+    else{
+      nav().spinU(0);
+    }
   }
 
   Material material;
