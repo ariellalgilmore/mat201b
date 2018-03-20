@@ -113,7 +113,7 @@ struct MyApp : OmniStereoGraphicsRenderer {
       // g.rotate(state->angle, 0, 1, 0);
 
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
+        g.color(HSV(data.row[i].colors[j] / 255.0*2, .65, 1));
       }
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *
@@ -156,54 +156,54 @@ struct MyApp : OmniStereoGraphicsRenderer {
     }
   }
 
-  virtual void ___onDraw(Graphics& g) {
-    shader().uniform("lighting", 0.0);
-    shader().uniform("texture", 1.0);
-    if (false) {
-      backTexture.bind();
-      g.draw(backMesh);
-      backTexture.unbind();
-    }
+  // virtual void ___onDraw(Graphics& g) {
+  //   shader().uniform("lighting", 0.0);
+  //   shader().uniform("texture", 1.0);
+  //   if (false) {
+  //     backTexture.bind();
+  //     g.draw(backMesh);
+  //     backTexture.unbind();
+  //   }
 
-    g.depthMask(true);
-    g.depthTesting(true);
-    g.blending(false);
-    material();
-    light();
-    shader().uniform("lighting", 0.2);
-    shader().uniform("texture", 0.0);
-    for (int i = 0; i < data.row.size(); i++) {
-      g.pushMatrix();
-      for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
-      }
-      g.translate(pos[i] + pos[i] *
-                               data.row[i].monthData[state->indexOfDataSet] *
-                               state->course);
-      Vec3f src = pos[i] + pos[i] *
-                               data.row[i].monthData[state->indexOfDataSet] *
-                               state->course;
-      double scale = .001;
-      g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
-      g.pushMatrix();
-      g.translate(.9, 0, .9);
-      g.popMatrix();
-      g.draw(sphere);
-      if (state->turnOnLabels == 1) {
-        g.pushMatrix();
-        shader().uniform("lighting", 0.0);
-        g.translate(.9, 0, .9);
-        Vec3d forward = Vec3d(Vec3f(0, 0, 0) - src).normalize();
-        Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
-        g.rotate(rot);
-        texture[i].quad(g);
-        g.popMatrix();
-      }
-      shader().uniform("lighting", 0.2);
-      shader().uniform("texture", 0.0);
-      g.popMatrix();
-    }
-  }
+  //   g.depthMask(true);
+  //   g.depthTesting(true);
+  //   g.blending(false);
+  //   material();
+  //   light();
+  //   shader().uniform("lighting", 0.2);
+  //   shader().uniform("texture", 0.0);
+  //   for (int i = 0; i < data.row.size(); i++) {
+  //     g.pushMatrix();
+  //     for (int j = 0; j < data.row[0].monthData.size(); j++) {
+  //       g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
+  //     }
+  //     g.translate(pos[i] + pos[i] *
+  //                              data.row[i].monthData[state->indexOfDataSet] *
+  //                              state->course);
+  //     Vec3f src = pos[i] + pos[i] *
+  //                              data.row[i].monthData[state->indexOfDataSet] *
+  //                              state->course;
+  //     double scale = .001;
+  //     g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
+  //     g.pushMatrix();
+  //     g.translate(.9, 0, .9);
+  //     g.popMatrix();
+  //     g.draw(sphere);
+  //     if (state->turnOnLabels == 1) {
+  //       g.pushMatrix();
+  //       shader().uniform("lighting", 0.0);
+  //       g.translate(.9, 0, .9);
+  //       Vec3d forward = Vec3d(Vec3f(0, 0, 0) - src).normalize();
+  //       Quatd rot = Quatd::getBillboardRotation(forward, nav().uu());
+  //       g.rotate(rot);
+  //       texture[i].quad(g);
+  //       g.popMatrix();
+  //     }
+  //     shader().uniform("lighting", 0.2);
+  //     shader().uniform("texture", 0.0);
+  //     g.popMatrix();
+  //   }
+  // }
 };
 
 int main() {

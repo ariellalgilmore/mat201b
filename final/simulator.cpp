@@ -26,6 +26,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
   SoundSource aSoundSource;
 
   Texture texture[FILE_LIST_N];
+  Texture balls;
 
   MyApp()
       : maker(Simulator::defaultBroadcastIP()),
@@ -35,7 +36,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     for (int i = 0; i < FILE_LIST_N; i++) {
       Image image;
       string s = fullPathOrDie(fileList[i]);
-      cout << s << endl;
+      //cout << s << endl;
       if (!image.load(s)) {
         cerr << "failed to load " << fileList[i] << endl;
         exit(1);
@@ -44,6 +45,14 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     }
 
     Image background;
+    
+    Image tennisball;
+
+    if (!tennisball.load(fullPathOrDie("tennisTex.jpg"))) {
+      fprintf(stderr, "FAIL\n");
+      exit(1);
+    }
+    balls.allocate(tennisball.array());
 
     if (!background.load(fullPathOrDie("possiblebg.png"))) {
       fprintf(stderr, "FAIL\n");
@@ -59,7 +68,9 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
     data.load(fullPathOrDie("finaltennisdata.csv"));
 
     addSphere(sphere);
+    //addSphereWithTexcoords(sphere);
     sphere.generateNormals();
+    addSphereWithTexcoords(sphere);
     float worldradius = 1;
     for (int i = 0; i < data.row.size(); i++) {
       Vec3f position;
@@ -191,14 +202,14 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
 
     material();
     light();
-
     for (int i = 0; i < data.row.size(); i++) {
       g.pushMatrix();
+      balls.bind();
 
       // g.rotate(state->angle, 0, 1, 0);
 
       for (int j = 0; j < data.row[0].monthData.size(); j++) {
-        g.color(HSV(data.row[i].colors[j] / 255.0, .4, .5));
+        g.color(HSV(data.row[i].colors[j] / 255.0*2, .65, 1));
       }
       g.translate(pos[i] + pos[i] *
                                data.row[i].monthData[state->indexOfDataSet] *
@@ -209,6 +220,7 @@ struct MyApp : App, AlloSphereAudioSpatializer, InterfaceServerClient {
       double scale = .001;
       g.scale(data.row[i].monthData[state->indexOfDataSet] * scale);
       g.draw(sphere);
+      balls.unbind();
       g.popMatrix();
     }
 
